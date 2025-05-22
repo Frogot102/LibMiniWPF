@@ -1,0 +1,106 @@
+﻿<Window x:Class="LibMiniWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LibMiniWPF"
+        mc:Ignorable="d"
+        Title="Мини-библиотека" Height="700" Width="1200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <GroupBox Grid.Row="0" Header="Добавить книгу" Margin="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtTitle" Grid.Column="0" Margin="5" Text="" ToolTip="Название"/>
+                <TextBox x:Name="txtAuthor" Grid.Column="1" Margin="5" Text="" ToolTip="Автор"/>
+                <ComboBox x:Name="cmbGenre" Grid.Column="2" Margin="5" IsEditable="True" Text="" ToolTip="Жанр"/>
+                <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Рейтинг:" Margin="0,0,5,0"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="star1" GroupName="Rating" Content="★" FontSize="16" Tag="1"/>
+                        <RadioButton x:Name="star2" GroupName="Rating" Content="★" FontSize="16" Tag="2"/>
+                        <RadioButton x:Name="star3" GroupName="Rating" Content="★" FontSize="16" Tag="3"/>
+                        <RadioButton x:Name="star4" GroupName="Rating" Content="★" FontSize="16" Tag="4"/>
+                        <RadioButton x:Name="star5" GroupName="Rating" Content="★" FontSize="16" Tag="5" IsChecked="True"/>
+                    </StackPanel>
+                </StackPanel>
+                <Button x:Name="btnAdd" Grid.Column="4" Content="Добавить" Margin="5" Width="80" Click="btnAdd_Click"/>
+            </Grid>
+        </GroupBox>
+
+        
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
+            <TextBlock Text="Сортировка:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <Button x:Name="btnSortByDate" Content="По дате" Margin="5,0" Click="SortBooks"/>
+            <Button x:Name="btnSortByAuthor" Content="По автору" Margin="5,0" Click="SortBooks"/>
+            <Button x:Name="btnSortByRating" Content="По рейтингу" Margin="5,0" Click="SortBooks"/>
+        </StackPanel>
+
+
+        <DataGrid x:Name="booksGrid" Grid.Row="4" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" 
+                  MouseDoubleClick="booksGrid_MouseDoubleClick" SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" Binding="{Binding Title}" Width="*"/>
+                <DataGridTextColumn Header="Автор" Binding="{Binding Author}" Width="*"/>
+                <DataGridTextColumn Header="Жанр" Binding="{Binding Genre}" Width="*"/>
+                <DataGridTemplateColumn Header="Рейтинг" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding RatingStars}" FontSize="16"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Дата добавления" Binding="{Binding AddedDate, StringFormat={}{0:dd.MM.yyyy}}" Width="Auto"/>
+                <DataGridTemplateColumn Header="Прочитано" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsRead}" HorizontalAlignment="Center" VerticalAlignment="Center" Click="CheckBox_Click" x:Name="ReadCheckBox"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Удалить" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="X" Width="30" Click="DeleteButton_Click" x:Name="DelBook"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+
+        <StatusBar Grid.Row="5">
+            <StatusBarItem>
+                <TextBlock>
+                    <Run Text="Всего книг:"/>
+                    <TextBlock x:Name="txtTotalBooks" Text="0"/>
+                </TextBlock>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock>
+                    <Run Text="Прочитано:"/>
+                    <TextBlock x:Name="txtReadBooks" Text="0"/>
+                </TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
