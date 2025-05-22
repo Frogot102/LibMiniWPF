@@ -256,5 +256,21 @@ namespace LibMiniWPF
                 editWindow.ShowDialog();
             }
         }
+
+
+        private void OguzokPic_KeyDown(object sender, KeyEventArgs e)
+        {
+            OguzokPic.Visibility = Visibility.Collapsed;
+        }
+
+        private void PrikolBtn_Click(object sender, RoutedEventArgs e)
+        {
+            OguzokPic.Visibility = Visibility.Visible;
+        }
+
+        private void PrikolBtn_KeyUp(object sender, KeyEventArgs e)
+        {
+            OguzokPic.Visibility = Visibility.Visible;
+        }
     }
 }

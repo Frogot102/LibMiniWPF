@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LibMiniWPF"
         mc:Ignorable="d"
-        Title="Мини-библиотека" Height="700" Width="1200">
+        Title="Мини-библиотека" Height="700" Width="1200"
+        Icon="Image\Icon2.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -37,13 +38,13 @@
                         <RadioButton x:Name="star3" GroupName="Rating" Content="★" FontSize="16" Tag="3"/>
                         <RadioButton x:Name="star4" GroupName="Rating" Content="★" FontSize="16" Tag="4"/>
                         <RadioButton x:Name="star5" GroupName="Rating" Content="★" FontSize="16" Tag="5" IsChecked="True"/>
+                        
                     </StackPanel>
                 </StackPanel>
                 <Button x:Name="btnAdd" Grid.Column="4" Content="Добавить" Margin="5" Width="80" Click="btnAdd_Click"/>
+                
             </Grid>
         </GroupBox>
-
-        
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
             <TextBlock Text="Сортировка:" VerticalAlignment="Center" Margin="0,0,5,0"/>
@@ -63,7 +64,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding RatingStars}" FontSize="16"/>
+                                <TextBlock Text="{Binding RatingStars}" FontSize="16"/> 
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -101,6 +102,9 @@
                     <TextBlock x:Name="txtReadBooks" Text="0"/>
                 </TextBlock>
             </StatusBarItem>
+            <Separator/>
+            <Button Click="PrikolBtn_Click" x:Name="PrikolBtn" Height="50" Width="50" Content="Prikol" Keyboard.KeyDown="OguzokPic_KeyDown" Keyboard.KeyUp="PrikolBtn_KeyUp"/>
+            <Image Source="Image\Icon2.ico" Visibility="Collapsed" Height="250" Width="250" x:Name="OguzokPic"/>
         </StatusBar>
     </Grid>
 </Window>
