@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -29,21 +28,28 @@ namespace LibMiniWPF
         {
             InitializeComponent();
 
+            // Инициализация жанров
             cmbGenre.Items.Add("Фантастика");
             cmbGenre.Items.Add("Детектив");
             cmbGenre.Items.Add("Роман");
             cmbGenre.Items.Add("Научная литература");
             cmbGenre.Items.Add("Фэнтези");
 
+            // Инициализация фильтра по жанрам
+            cmbGenreFilter.Items.Add("Все жанры");
+            foreach (var genre in cmbGenre.Items)
+            {
+                cmbGenreFilter.Items.Add(genre);
+            }
+            cmbGenreFilter.SelectedIndex = 0;
+
+            // Инициализация DataGrid
+            booksGrid.ItemsSource = filteredBooks;
             UpdateStatistics();
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            int bookcount = Convert.ToInt32(txtTotalBooks.Text);
-            int bookreaded = Convert.ToInt32(txtReadBooks.Text);
-            
-
             if (string.IsNullOrWhiteSpace(txtTitle.Text))
             {
                 MessageBox.Show("Введите название книги");
@@ -68,57 +74,79 @@ namespace LibMiniWPF
 
             allBooks.Add(book);
             ApplyFilters();
-            var button = sender as Button;
 
-            if (button == btnSortByDate)
+
+            if (!cmbGenreFilter.Items.Contains(book.Genre) && !string.IsNullOrEmpty(book.Genre))
             {
-                filteredBooks = filteredBooks.OrderBy(b => b.AddedDate).ToList();
+                cmbGenreFilter.Items.Add(book.Genre);
             }
-            else if (button == btnSortByAuthor)
-            {
-                filteredBooks = filteredBooks.OrderBy(b => b.Author).ThenBy(b => b.Title).ToList();
-            }
-            else if (button == btnSortByRating)
-            {
-                filteredBooks = filteredBooks.OrderByDescending(b => b.Rating).ThenBy(b => b.Title).ToList();
-            }
-
-            booksGrid.ItemsSource = filteredBooks;
-
-
 
             txtTitle.Text = "";
             txtAuthor.Text = "";
             cmbGenre.Text = "";
             star5.IsChecked = true;
-            UpdateStatistics();
-            bookcount++;
-            txtTotalBooks.Text = bookcount.ToString();
         }
 
         private void ApplyFilters()
+{
+    try
+    {
+        if (allBooks == null) return;
+
+        filteredBooks = allBooks.ToList();
+
+        // Применение поиска
+        if (!string.IsNullOrWhiteSpace(txtSearch?.Text))
         {
-            filteredBooks = allBooks.ToList();
-
-
-            UpdateStatistics();
+            string searchTerm = txtSearch.Text.ToLower();
+            filteredBooks = filteredBooks.Where(b =>
+                (b.Title?.ToLower().Contains(searchTerm)) == true ||
+                (b.Author?.ToLower().Contains(searchTerm)) == true ||
+                (b.Genre?.ToLower().Contains(searchTerm) == true)).ToList();
         }
+
+        // Фильтрация по жанру
+        if (cmbGenreFilter?.SelectedItem != null && cmbGenreFilter.SelectedItem.ToString() != "Все жанры")
+        {
+            string selectedGenre = cmbGenreFilter.SelectedItem.ToString();
+            filteredBooks = filteredBooks.Where(b => b.Genre == selectedGenre).ToList();
+        }
+
+        // Фильтрация по статусу (с проверкой на null)
+        if (cmbStatusFilter?.SelectedItem != null)
+        {
+            var selectedItem = cmbStatusFilter.SelectedItem as ComboBoxItem;
+            if (selectedItem?.Content != null)
+            {
+                string selectedStatus = selectedItem.Content.ToString();
+                switch (selectedStatus)
+                {
+                    case "Прочитано":
+                        filteredBooks = filteredBooks.Where(b => b.IsRead).ToList();
+                        break;
+                    case "Не прочитано":
+                        filteredBooks = filteredBooks.Where(b => !b.IsRead).ToList();
+                        break;
+                }
+            }
+        }
+
+        // Фильтрация по рейтингу
+        filteredBooks = filteredBooks.Where(b => b.Rating >= (sliderRatingFilter?.Value ?? 1)).ToList();
+
+        booksGrid.ItemsSource = filteredBooks;
+        UpdateStatistics();
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Произошла ошибка при фильтрации: {ex.Message}");
+    }
+}
 
         private void UpdateStatistics()
         {
-            //txtTotalBooks.Text = allBooks.Count.ToString();
-            //txtReadBooks.Text = allBooks.Count(b => b.IsRead).ToString();
-            //txtAvgRating.Text = allBooks.Any() ? allBooks.Average(b => b.Rating).ToString("0.00") : "0";
-        }
-
-        private void FilterChanged(object sender, RoutedEventArgs e)
-        {
-            ApplyFilters();
-        }
-
-        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ApplyFilters();
+            txtTotalBooks.Text = filteredBooks.Count.ToString();
+            txtReadBooks.Text = filteredBooks.Count(b => b.IsRead).ToString();
         }
 
         private void SortBooks(object sender, RoutedEventArgs e)
@@ -146,50 +174,29 @@ namespace LibMiniWPF
             var checkBox = sender as CheckBox;
             var book = checkBox.DataContext as Book;
             book.IsRead = checkBox.IsChecked == true;
-            int bookreaded = Convert.ToInt32(txtReadBooks.Text);
-
-            if (checkBox.IsChecked == false)
-            {
-                bookreaded--;
-                txtReadBooks.Text = bookreaded.ToString();
-            }
-            else
-            {
-                bookreaded++;
-                txtReadBooks.Text = bookreaded.ToString();
-            }
             UpdateStatistics();
-
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var book = button.DataContext as Book;
-            int bookcount = Convert.ToInt32(txtTotalBooks.Text);
 
             if (MessageBox.Show($"Удалить книгу '{book.Title}'?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 allBooks.Remove(book);
                 ApplyFilters();
             }
+        }
 
-            if (button == btnSortByDate)
-            {
-                filteredBooks = filteredBooks.OrderBy(b => b.AddedDate).ToList();
-            }
-            else if (button == btnSortByAuthor)
-            {
-                filteredBooks = filteredBooks.OrderBy(b => b.Author).ThenBy(b => b.Title).ToList();
-            }
-            else if (button == btnSortByRating)
-            {
-                filteredBooks = filteredBooks.OrderByDescending(b => b.Rating).ThenBy(b => b.Title).ToList();
-            }
+        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilters();
+        }
 
-            booksGrid.ItemsSource = filteredBooks;
-            bookcount--;
-            txtTotalBooks.Text = bookcount.ToString();
+        private void FilterChanged(object sender, RoutedEventArgs e)
+        {
+            ApplyFilters();
         }
 
         private void booksGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -256,7 +263,6 @@ namespace LibMiniWPF
                 editWindow.ShowDialog();
             }
         }
-
 
         private void OguzokPic_KeyDown(object sender, KeyEventArgs e)
         {

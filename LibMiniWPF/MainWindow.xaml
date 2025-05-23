@@ -17,7 +17,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-
         <GroupBox Grid.Row="0" Header="Добавить книгу" Margin="5">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -38,11 +37,9 @@
                         <RadioButton x:Name="star3" GroupName="Rating" Content="★" FontSize="16" Tag="3"/>
                         <RadioButton x:Name="star4" GroupName="Rating" Content="★" FontSize="16" Tag="4"/>
                         <RadioButton x:Name="star5" GroupName="Rating" Content="★" FontSize="16" Tag="5" IsChecked="True"/>
-                        
                     </StackPanel>
                 </StackPanel>
                 <Button x:Name="btnAdd" Grid.Column="4" Content="Добавить" Margin="5" Width="80" Click="btnAdd_Click"/>
-                
             </Grid>
         </GroupBox>
 
@@ -51,11 +48,29 @@
             <Button x:Name="btnSortByDate" Content="По дате" Margin="5,0" Click="SortBooks"/>
             <Button x:Name="btnSortByAuthor" Content="По автору" Margin="5,0" Click="SortBooks"/>
             <Button x:Name="btnSortByRating" Content="По рейтингу" Margin="5,0" Click="SortBooks"/>
+            <Separator/>
+            <TextBlock Text="Поиск:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox x:Name="txtSearch" Margin="0 0 5 0" Width="250" TextChanged="txtSearch_TextChanged"/>
+            <Separator/>
+            <TextBlock Text="Фильтрация:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox x:Name="cmbGenreFilter" Margin="5" Width="150" SelectionChanged="FilterChanged">
+                <ComboBoxItem Content="Все жанры" IsSelected="True"/>
+            </ComboBox>
+            <ComboBox x:Name="cmbStatusFilter" Margin="5" Width="150" SelectionChanged="FilterChanged">
+                <ComboBoxItem Content="Все" IsSelected="True"/>
+                <ComboBoxItem Content="Прочитано"/>
+                <ComboBoxItem Content="Не прочитано"/>
+            </ComboBox>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Рейтинг от:" Margin="5,0,5,0"/>
+                <Slider x:Name="sliderRatingFilter" Width="100" Minimum="1" Maximum="5" Value="1" 
+                        TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="FilterChanged"/>
+                <TextBlock Text="{Binding Value, ElementName=sliderRatingFilter}" Margin="5,0,0,0" Width="20"/>
+            </StackPanel>
         </StackPanel>
 
-
-        <DataGrid x:Name="booksGrid" Grid.Row="4" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" 
-                  MouseDoubleClick="booksGrid_MouseDoubleClick" SelectionMode="Single">
+        <DataGrid x:Name="booksGrid" Grid.Row="4" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" 
+                  CanUserDeleteRows="False" MouseDoubleClick="booksGrid_MouseDoubleClick" SelectionMode="Single">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название" Binding="{Binding Title}" Width="*"/>
                 <DataGridTextColumn Header="Автор" Binding="{Binding Author}" Width="*"/>
@@ -64,7 +79,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding RatingStars}" FontSize="16"/> 
+                                <TextBlock Text="{Binding RatingStars}" FontSize="16"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -73,7 +88,8 @@
                 <DataGridTemplateColumn Header="Прочитано" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsRead}" HorizontalAlignment="Center" VerticalAlignment="Center" Click="CheckBox_Click" x:Name="ReadCheckBox"/>
+                            <CheckBox IsChecked="{Binding IsRead}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                      Click="CheckBox_Click" x:Name="ReadCheckBox"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -86,7 +102,6 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-
 
         <StatusBar Grid.Row="5">
             <StatusBarItem>
@@ -103,7 +118,8 @@
                 </TextBlock>
             </StatusBarItem>
             <Separator/>
-            <Button Click="PrikolBtn_Click" x:Name="PrikolBtn" Height="50" Width="50" Content="Prikol" Keyboard.KeyDown="OguzokPic_KeyDown" Keyboard.KeyUp="PrikolBtn_KeyUp"/>
+            <Button Click="PrikolBtn_Click" x:Name="PrikolBtn" Height="50" Width="50" Content="Prikol" 
+                    Keyboard.KeyDown="OguzokPic_KeyDown" Keyboard.KeyUp="PrikolBtn_KeyUp"/>
             <Image Source="Image\Icon2.ico" Visibility="Collapsed" Height="250" Width="250" x:Name="OguzokPic"/>
         </StatusBar>
     </Grid>
